@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(226, 194, 158, 0.24), transparent 25rem),
+    radial-gradient(circle at 88% 34%, rgba(158, 171, 142, 0.14), transparent 24rem),
+    #f7f4ee;
+  color: #25231f;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}
+
+.cafe-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.cafe-shell::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  opacity: 0.32;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+.cafe-shell::after {
+  position: absolute;
+  top: 12rem;
+  left: -7rem;
+  z-index: -1;
+  width: 19rem;
+  height: 19rem;
+  pointer-events: none;
+  content: "";
+  border-radius: 9999px;
+  background: rgba(181, 137, 101, 0.11);
+  filter: blur(2px);
+  animation: float-blob 18s ease-in-out infinite;
+}
+
+.hero-copy,
+.hero-photo,
+.menu-section {
+  animation: reveal-up 0.8s both;
+}
+
+.hero-photo { animation-delay: 120ms; }
+.menu-section { animation-delay: 220ms; }
+
+.menu-card {
+  border: 1px solid rgba(230, 224, 214, 0.9);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 10px 26px rgba(56, 44, 29, 0.035);
+  transition: transform 320ms ease, box-shadow 320ms ease, background 320ms ease;
+}
+
+.menu-card:hover {
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18px 38px rgba(56, 44, 29, 0.11);
+  transform: translateY(-5px);
+}
+
+.category-pill {
+  border-color: #d3c8b9;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.category-pill-active {
+  box-shadow: 0 7px 16px rgba(37, 35, 31, 0.14);
+}
+
+.menu-heading {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(230, 224, 214, 0.82);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 92% 20%, rgba(120, 132, 108, 0.13), transparent 11rem),
+    linear-gradient(110deg, rgba(255, 255, 255, 0.56), rgba(241, 229, 211, 0.24));
+  box-shadow: 0 12px 30px rgba(56, 44, 29, 0.045);
+  padding: 1.25rem;
+}
+
+.menu-heading::after {
+  position: absolute;
+  right: 1.5rem;
+  bottom: -3.25rem;
+  width: 8rem;
+  height: 8rem;
+  content: "";
+  border: 1px solid rgba(110, 75, 58, 0.12);
+  border-radius: 9999px;
+}
+
+.menu-heading-title {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-heading-title::after {
+  position: absolute;
+  right: -0.25rem;
+  bottom: -0.15rem;
+  left: 0.1rem;
+  height: 0.35rem;
+  z-index: -1;
+  content: "";
+  border-radius: 9999px;
+  background: rgba(181, 137, 101, 0.28);
+  transform: rotate(-1deg);
+}
+
+.stamp {
+  transform-origin: center;
+  animation: stamp-drift 22s linear infinite;
+}
+
+.whatsapp-cta {
+  animation: whatsapp-breathe 3.8s ease-in-out infinite;
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stamp-drift {
+  0%, 100% { transform: rotate(12deg); }
+  50% { transform: rotate(17deg) translateY(-3px); }
+}
+
+@keyframes float-blob {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(28px, 22px, 0) scale(1.08); }
+}
+
+@keyframes whatsapp-breathe {
+  0%, 100% { box-shadow: 0 10px 24px rgba(37, 211, 102, 0.18); }
+  50% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.38); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
