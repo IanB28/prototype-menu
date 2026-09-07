@@ -2,7 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BarChart3, Check, ChevronLeft, Eye, MoreHorizontal, Plus, Search, Settings2, ShoppingBag, Trash2, X } from "lucide-react";
+import {
+  BarChart3,
+  Check,
+  ChevronLeft,
+  Eye,
+  Layers,
+  MoreHorizontal,
+  Plus,
+  QrCode,
+  Search,
+  Settings2,
+  ShoppingBag,
+  Sparkles,
+  Trash2,
+  X
+} from "lucide-react";
 import { categories, type Category, type Product } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useProducts } from "@/lib/use-products";
@@ -16,7 +31,13 @@ export function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
 
-  const visible = products.filter((p) => `${p.name} ${p.category}`.toLowerCase().includes(search.toLowerCase()));
+  const availableCount = products.filter((p) => p.available).length;
+  const unavailableCount = products.length - availableCount;
+  const availabilityPercent = products.length > 0 ? Math.round((availableCount / products.length) * 100) : 0;
+
+  const visible = products.filter((p) =>
+    `${p.name} ${p.category}`.toLowerCase().includes(search.toLowerCase())
+  );
 
   const openNew = () => {
     setEditing(null);
@@ -44,9 +65,10 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f5f6f3] text-ink">
+      {/* Sidebar navigation */}
       <aside className="fixed hidden h-screen w-64 flex-col border-r border-line bg-white px-5 py-7 md:flex">
         <Link href="/" className="mb-12 flex items-center gap-3 px-2">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-lg text-cream shadow-2xs">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-ink font-display text-lg text-cream shadow-2xs">
             ☁
           </span>
           <span className="font-display text-lg font-semibold">Café Nube</span>
@@ -54,38 +76,56 @@ export function AdminDashboard() {
         <nav className="space-y-1 text-sm font-medium">
           <div className="flex items-center gap-3 rounded-xl bg-cream px-3 py-3 font-semibold text-espresso">
             <ShoppingBag size={18} />
-            Productos
+            <span>Productos</span>
           </div>
-          <div className="flex items-center gap-3 px-3 py-3 text-ink/60 transition hover:text-ink">
+          <Link
+            href="/admin/qr"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 text-ink/70 transition hover:bg-cream hover:text-ink"
+          >
+            <QrCode size={18} />
+            <span>Código QR</span>
+          </Link>
+          <div className="flex items-center gap-3 px-3 py-3 text-ink/40 transition select-none">
             <BarChart3 size={18} />
-            Resumen
+            <span>Resumen</span>
           </div>
-          <div className="flex items-center gap-3 px-3 py-3 text-ink/60 transition hover:text-ink">
+          <div className="flex items-center gap-3 px-3 py-3 text-ink/40 transition select-none">
             <Settings2 size={18} />
-            Configuración
+            <span>Configuración</span>
           </div>
         </nav>
         <div className="mt-auto rounded-2xl border border-line/60 bg-cream/80 p-4">
           <p className="text-xs font-semibold text-ink">¿Quieres ver tu menú?</p>
-          <Link href="/" className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-espresso transition hover:underline">
+          <Link
+            href="/"
+            className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-espresso transition hover:underline"
+          >
             Abrir vista pública <ChevronLeft size={14} className="rotate-180" />
           </Link>
         </div>
       </aside>
 
       <div className="md:ml-64">
+        {/* Top Header */}
         <header className="flex items-center justify-between border-b border-line bg-white px-5 py-5 sm:px-8">
           <div>
             <p className="text-xs uppercase tracking-widest text-ink/50">Administración</p>
             <h1 className="font-display text-2xl font-medium text-ink">Tu menú, en orden.</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <Link
+              href="/admin/qr"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-xs font-semibold text-ink/80 transition hover:border-espresso hover:text-espresso"
+            >
+              <QrCode size={15} />
+              <span className="hidden xs:inline sm:inline">Código QR</span>
+            </Link>
             <Link
               href="/"
               className="hidden items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold text-ink/80 transition hover:border-espresso hover:text-espresso sm:flex"
             >
               <Eye size={15} />
-              Vista previa
+              <span>Vista previa</span>
             </Link>
             <div className="grid h-9 w-9 place-items-center rounded-full bg-espresso text-xs font-bold text-white shadow-2xs">
               CN
@@ -94,20 +134,97 @@ export function AdminDashboard() {
         </header>
 
         <main className="mx-auto max-w-6xl px-5 py-7 sm:px-8">
-          <div className="mb-8 grid gap-4 sm:grid-cols-3">
-            <Stat icon={<ShoppingBag size={18} />} label="Productos totales" value={products.length.toString()} />
-            <Stat
-              icon={<Check size={18} />}
-              label="Disponibles"
-              value={products.filter((p) => p.available).length.toString()}
-            />
-            <Stat
-              icon={<BarChart3 size={18} />}
-              label="Categorías activas"
-              value={editableCategories.length.toString()}
-            />
-          </div>
+          {/* RECUADROS PRINCIPALES (STAT CARDS) */}
+          <section className="mb-8 grid gap-4 sm:grid-cols-3 sm:gap-5" aria-label="Métricas del menú">
+            {/* Card 1: Total de productos */}
+            <div className="group relative overflow-hidden rounded-2xl border border-line/90 bg-gradient-to-br from-white via-white to-[#faf8f3] p-5 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:border-espresso/35 hover:shadow-soft">
+              <div className="flex items-center justify-between">
+                <div className="grid h-11 w-11 place-items-center rounded-xl border border-espresso/15 bg-espresso/10 text-espresso transition-transform duration-300 group-hover:scale-105">
+                  <ShoppingBag size={20} />
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-espresso/20 bg-espresso/10 px-2.5 py-1 text-[11px] font-semibold text-espresso">
+                  <Sparkles size={11} />
+                  En catálogo
+                </span>
+              </div>
+              <div className="mt-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/55">
+                  Productos registrados
+                </p>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-sans text-4xl font-bold tabular-nums tracking-tight text-ink">
+                    {products.length}
+                  </span>
+                  <span className="text-xs font-medium text-ink/55">ítems activos</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 border-t border-line/60 pt-3 text-xs text-ink/65">
+                <span className="h-1.5 w-1.5 rounded-full bg-espresso" />
+                <span>Base completa en carta digital</span>
+              </div>
+            </div>
 
+            {/* Card 2: Disponibles */}
+            <div className="group relative overflow-hidden rounded-2xl border border-line/90 bg-gradient-to-br from-white via-white to-[#f4f7f2] p-5 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:border-[#78846c]/40 hover:shadow-soft">
+              <div className="flex items-center justify-between">
+                <div className="grid h-11 w-11 place-items-center rounded-xl border border-[#d2e4d0] bg-[#e5f1e4] text-[#2d632d] transition-transform duration-300 group-hover:scale-105">
+                  <Check size={20} />
+                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#cfe2ce] bg-[#eaf4e9] px-2.5 py-1 text-[11px] font-semibold text-[#2b612b]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#2d632d] animate-pulse" />
+                  {availabilityPercent}% en sala
+                </span>
+              </div>
+              <div className="mt-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/55">
+                  Disponibles hoy
+                </p>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-sans text-4xl font-bold tabular-nums tracking-tight text-ink">
+                    {availableCount}
+                  </span>
+                  <span className="text-xs font-medium text-ink/55">
+                    de {products.length} listos
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 border-t border-line/60 pt-3 text-xs text-ink/65">
+                <span className={cn("h-1.5 w-1.5 rounded-full", unavailableCount === 0 ? "bg-[#2d632d]" : "bg-espresso")} />
+                <span>
+                  {unavailableCount === 0 ? "Todos los productos disponibles" : `${unavailableCount} producto(s) agotado(s)`}
+                </span>
+              </div>
+            </div>
+
+            {/* Card 3: Categorías activas */}
+            <div className="group relative overflow-hidden rounded-2xl border border-line/90 bg-gradient-to-br from-white via-white to-[#f7f5f2] p-5 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:border-sage/40 hover:shadow-soft">
+              <div className="flex items-center justify-between">
+                <div className="grid h-11 w-11 place-items-center rounded-xl border border-sage/20 bg-sage/10 text-sage transition-transform duration-300 group-hover:scale-105">
+                  <Layers size={20} />
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-sage/20 bg-sage/10 px-2.5 py-1 text-[11px] font-semibold text-sage">
+                  Estructura
+                </span>
+              </div>
+              <div className="mt-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/55">
+                  Categorías de carta
+                </p>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-sans text-4xl font-bold tabular-nums tracking-tight text-ink">
+                    {editableCategories.length}
+                  </span>
+                  <span className="text-xs font-medium text-ink/55">secciones</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 border-t border-line/60 pt-3 text-xs text-ink/65 truncate">
+                <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                <span className="truncate">Café, Bebidas, Panadería y Especiales</span>
+              </div>
+            </div>
+          </section>
+
+          {/* LISTA DE PRODUCTOS (Diseño original restaurado) */}
           <div className="rounded-2xl border border-line bg-white shadow-2xs">
             <div className="flex flex-col gap-4 border-b border-line p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -133,7 +250,7 @@ export function AdminDashboard() {
               />
             </div>
 
-            <div className="divide-y divide-line">
+            <div className="divide-y border-t border-line">
               {visible.map((product) => (
                 <div key={product.id} className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-stone-50/50 sm:gap-5">
                   <img src={product.image} alt="" className="h-14 w-14 rounded-xl object-cover shadow-2xs" />
@@ -168,22 +285,18 @@ export function AdminDashboard() {
                   </button>
                 </div>
               ))}
+
+              {visible.length === 0 && (
+                <div className="py-16 text-center text-ink/50 text-sm">
+                  No encontramos productos con ese nombre o categoría.
+                </div>
+              )}
             </div>
           </div>
         </main>
 
         {showForm && <ProductForm product={editing} onClose={() => setShowForm(false)} onSave={save} />}
       </div>
-    </div>
-  );
-}
-
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-line bg-white p-5 shadow-2xs">
-      <div className="mb-4 grid h-9 w-9 place-items-center rounded-xl bg-cream text-espresso">{icon}</div>
-      <p className="text-sm font-medium text-ink/65">{label}</p>
-      <p className="mt-1 font-display text-3xl font-medium tabular-nums text-ink">{value}</p>
     </div>
   );
 }
