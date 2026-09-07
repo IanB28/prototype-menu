@@ -11,6 +11,9 @@ body {
     radial-gradient(circle at 88% 34%, rgba(158, 171, 142, 0.14), transparent 24rem),
     #f7f4ee;
   color: #25231f;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
@@ -64,36 +67,112 @@ button { cursor: pointer; }
 .menu-card {
   border: 1px solid rgba(230, 224, 214, 0.9);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.34);
-  box-shadow: 0 10px 26px rgba(56, 44, 29, 0.035);
-  transition: transform 320ms ease, box-shadow 320ms ease, background 320ms ease;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 24px rgba(56, 44, 29, 0.035);
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1), background 260ms ease;
 }
 
 .menu-card:hover {
-  background: rgba(255, 255, 255, 0.62);
-  box-shadow: 0 18px 38px rgba(56, 44, 29, 0.11);
-  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(56, 44, 29, 0.08);
+  transform: translateY(-4px);
 }
 
 .category-pill {
-  border-color: #d3c8b9;
-  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid #dcd5c9;
+  background: rgba(255, 255, 255, 0.55);
+  transition: all 200ms ease;
+}
+
+.category-pill:hover {
+  border-color: #6e4b3a;
+  background: #ffffff;
 }
 
 .category-pill-active {
-  box-shadow: 0 7px 16px rgba(37, 35, 31, 0.14);
+  border-color: #6e4b3a !important;
+  background: #6e4b3a !important;
+  color: #f7f4ee !important;
+  box-shadow: 0 4px 12px rgba(110, 75, 58, 0.22);
+}
+
+.category-pill-active:hover {
+  border-color: #5c3e30 !important;
+  background: #5c3e30 !important;
+  color: #f7f4ee !important;
+}
+
+/* Shared interaction language: buttons retain a predictable shape in hover,
+   focus and pressed states instead of relying on browser defaults. */
+.menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.menu-button:focus-visible,
+.category-pill:focus-visible {
+  outline: 3px solid rgba(120, 132, 108, 0.45);
+  outline-offset: 3px;
+}
+
+.menu-button:active,
+.category-pill:active {
+  transform: scale(0.97);
+}
+
+.menu-button-primary {
+  background: #25231f;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(37, 35, 31, 0.12);
+}
+
+.menu-button-primary:hover {
+  background: #6e4b3a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(110, 75, 58, 0.22);
+}
+
+.menu-button-soft {
+  border: 1px solid #e2dacd;
+  background: rgba(255, 255, 255, 0.75);
+  color: #25231f;
+}
+
+.menu-button-soft:hover {
+  border-color: #6e4b3a;
+  background: #ffffff;
+  color: #6e4b3a;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(56, 44, 29, 0.06);
+}
+
+.menu-button-added {
+  border: 1px solid rgba(120, 132, 108, 0.4);
+  background: rgba(120, 132, 108, 0.14);
+  color: #2e3e26;
+}
+
+.menu-button-added:hover {
+  border-color: #78846c;
+  background: rgba(120, 132, 108, 0.22);
+  transform: translateY(-1.5px);
 }
 
 .menu-heading {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(230, 224, 214, 0.82);
+  border: 1px solid rgba(230, 224, 214, 0.85);
   border-radius: 1.5rem;
   background:
     radial-gradient(circle at 92% 20%, rgba(120, 132, 108, 0.13), transparent 11rem),
-    linear-gradient(110deg, rgba(255, 255, 255, 0.56), rgba(241, 229, 211, 0.24));
-  box-shadow: 0 12px 30px rgba(56, 44, 29, 0.045);
-  padding: 1.25rem;
+    linear-gradient(110deg, rgba(255, 255, 255, 0.65), rgba(241, 229, 211, 0.3));
+  box-shadow: 0 10px 28px rgba(56, 44, 29, 0.04);
+  padding: 1.5rem 1.75rem;
 }
 
 .menu-heading::after {
@@ -105,6 +184,7 @@ button { cursor: pointer; }
   content: "";
   border: 1px solid rgba(110, 75, 58, 0.12);
   border-radius: 9999px;
+  pointer-events: none;
 }
 
 .menu-heading-title {
@@ -135,23 +215,23 @@ button { cursor: pointer; }
 }
 
 @keyframes reveal-up {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes stamp-drift {
   0%, 100% { transform: rotate(12deg); }
-  50% { transform: rotate(17deg) translateY(-3px); }
+  50% { transform: rotate(16deg) translateY(-2px); }
 }
 
 @keyframes float-blob {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(28px, 22px, 0) scale(1.08); }
+  50% { transform: translate3d(24px, 18px, 0) scale(1.06); }
 }
 
 @keyframes whatsapp-breathe {
-  0%, 100% { box-shadow: 0 10px 24px rgba(37, 211, 102, 0.18); }
-  50% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.38); }
+  0%, 100% { box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25); }
+  50% { box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4); }
 }
 
 @media (prefers-reduced-motion: reduce) {

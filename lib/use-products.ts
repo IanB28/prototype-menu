@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { initialProducts, type Product } from "@/lib/data";
 
-const storageKey = "cafe-nube-products";
+// Bumped after the catalog expansion so existing demos pick up the complete menu.
+const storageKey = "cafe-nube-products-v2";
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>(initialProducts);

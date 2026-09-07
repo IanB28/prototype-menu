@@ -11,5 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body className={`${sans.variable} ${display.variable} font-sans`}>{children}</body></html>;
+  return (
+    <html lang="es" className="scroll-smooth">
+      <body className={`${sans.variable} ${display.variable} font-sans antialiased text-ink selection:bg-espresso/15 selection:text-ink`}>
+        {children}
+      </body>
+    </html>
+  );
 }
