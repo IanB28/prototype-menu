@@ -19,10 +19,9 @@ import {
   X
 } from "lucide-react";
 import { categories, type Category, type Product } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { cn, money } from "@/lib/utils";
 import { useProducts } from "@/lib/use-products";
 
-const money = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
 const editableCategories = categories.filter((c): c is Exclude<Category, "Todos"> => c !== "Todos");
 
 export function AdminDashboard() {
@@ -224,7 +223,7 @@ export function AdminDashboard() {
             </div>
           </section>
 
-          {/* LISTA DE PRODUCTOS (Diseño original restaurado) */}
+          {/* LISTA DE PRODUCTOS */}
           <div className="rounded-2xl border border-line bg-white shadow-2xs">
             <div className="flex flex-col gap-4 border-b border-line p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -233,27 +232,27 @@ export function AdminDashboard() {
               </div>
               <button
                 onClick={openNew}
-                className="flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-xs transition hover:bg-espresso"
+                className="flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-espresso active:scale-95 touch-manipulation"
               >
                 <Plus size={17} />
                 Nuevo producto
               </button>
             </div>
 
-            <div className="flex items-center gap-3 border-b border-line px-5 py-4">
-              <Search size={17} className="text-ink/40" />
+            <div className="flex items-center gap-3 border-b border-line px-5 py-3.5">
+              <Search size={18} className="text-ink/40 shrink-0" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nombre o categoría..."
-                className="w-full bg-transparent text-sm outline-none placeholder:text-ink/40"
+                className="w-full bg-transparent text-base sm:text-sm text-ink outline-none placeholder:text-ink/40"
               />
             </div>
 
             <div className="divide-y border-t border-line">
               {visible.map((product) => (
                 <div key={product.id} className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-stone-50/50 sm:gap-5">
-                  <img src={product.image} alt="" className="h-14 w-14 rounded-xl object-cover shadow-2xs" />
+                  <img src={product.image} alt="" className="h-14 w-14 rounded-xl object-cover shadow-2xs shrink-0" />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-semibold text-ink">{product.name}</h3>
                     <p className="mt-0.5 text-xs tabular-nums text-ink/65">
@@ -263,7 +262,7 @@ export function AdminDashboard() {
                   <button
                     onClick={() => toggle(product.id)}
                     className={cn(
-                      "hidden rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:block",
+                      "hidden min-h-[36px] rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors sm:block touch-manipulation",
                       product.available ? "bg-[#e5f1e4] text-[#336333]" : "bg-[#f5eae5] text-espresso"
                     )}
                   >
@@ -271,14 +270,14 @@ export function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => openEdit(product)}
-                    className="rounded-lg p-2 text-ink/50 transition hover:bg-cream hover:text-ink"
+                    className="grid h-11 w-11 place-items-center rounded-xl text-ink/50 transition hover:bg-cream hover:text-ink active:scale-90 touch-manipulation"
                     aria-label={`Editar ${product.name}`}
                   >
                     <MoreHorizontal size={18} />
                   </button>
                   <button
                     onClick={() => remove(product.id)}
-                    className="rounded-lg p-2 text-ink/40 transition hover:bg-red-50 hover:text-red-600"
+                    className="grid h-11 w-11 place-items-center rounded-xl text-ink/40 transition hover:bg-red-50 hover:text-red-600 active:scale-90 touch-manipulation"
                     aria-label={`Eliminar ${product.name}`}
                   >
                     <Trash2 size={16} />
@@ -327,76 +326,143 @@ function ProductForm({
     setForm((f) => ({ ...f, [key]: value }));
 
   return (
-    <div className="fixed inset-0 z-20 flex items-end justify-center bg-ink/30 p-0 backdrop-blur-2xs sm:items-center sm:p-5">
-      <div className="w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-        <div className="mb-6 flex items-center justify-between">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 backdrop-blur-2xs sm:items-center sm:p-5"
+      role="dialog"
+      aria-modal="true"
+      aria-label={product ? "Editar producto" : "Nuevo producto"}
+    >
+      <div
+        onClick={onClose}
+        className="fixed inset-0 cursor-default"
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-[2rem] bg-white p-6 shadow-2xl sm:max-h-[85vh] sm:rounded-3xl sm:p-7">
+        {/* Mobile touch drag indicator */}
+        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-line/80 sm:hidden" />
+
+        <div className="mb-5 flex items-center justify-between border-b border-line pb-4">
           <div>
-            <h2 className="font-display text-2xl font-medium text-ink">{product ? "Editar producto" : "Nuevo producto"}</h2>
-            <p className="mt-1 text-sm text-ink/65">Completa la información del producto.</p>
+            <h2 className="font-display text-2xl font-medium text-ink">
+              {product ? "Editar producto" : "Nuevo producto"}
+            </h2>
+            <p className="mt-0.5 text-xs sm:text-sm text-ink/65">
+              Completa la información del producto.
+            </p>
           </div>
-          <button onClick={onClose} className="rounded-full bg-cream p-2 text-ink/70 transition hover:text-ink">
-            <X size={17} />
+          <button
+            onClick={onClose}
+            className="grid h-11 w-11 place-items-center rounded-full bg-cream text-ink/70 transition hover:bg-line hover:text-ink touch-manipulation"
+            aria-label="Cerrar modal"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <div className="space-y-4">
-          <Field label="Nombre">
-            <input value={form.name} onChange={(e) => update("name", e.target.value)} />
+        <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+          <Field label="Nombre del producto">
+            <input
+              type="text"
+              autoFocus
+              value={form.name}
+              onChange={(e) => update("name", e.target.value)}
+              placeholder="Ej. Latte Vainilla Artesanal"
+              autoCapitalize="words"
+              className="text-base sm:text-sm"
+            />
           </Field>
+
           <Field label="Descripción">
-            <textarea rows={2} value={form.description} onChange={(e) => update("description", e.target.value)} />
+            <textarea
+              rows={2}
+              value={form.description}
+              onChange={(e) => update("description", e.target.value)}
+              placeholder="Breve reseña de ingredientes o notas de sabor..."
+              className="text-base sm:text-sm"
+            />
           </Field>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Precio">
-              <input type="number" value={form.price} onChange={(e) => update("price", Number(e.target.value))} />
+
+          <div className="grid grid-cols-2 gap-3.5">
+            <Field label="Precio ($ MXN)">
+              <input
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min="0"
+                step="1"
+                value={form.price || ""}
+                onChange={(e) => update("price", Number(e.target.value))}
+                placeholder="68"
+                className="font-sans text-base sm:text-sm tabular-nums"
+              />
             </Field>
+
             <Field label="Categoría">
-              <select value={form.category} onChange={(e) => update("category", e.target.value)}>
+              <select
+                value={form.category}
+                onChange={(e) => update("category", e.target.value)}
+                className="text-base sm:text-sm"
+              >
                 {editableCategories.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </select>
             </Field>
           </div>
-          <Field label="Imagen del producto (URL)">
+
+          <Field label="URL de imagen">
             <input
               type="url"
+              inputMode="url"
+              autoCapitalize="none"
               value={form.image}
               onChange={(e) => update("image", e.target.value)}
-              placeholder="https://..."
+              placeholder="https://images.unsplash.com/..."
+              className="text-base sm:text-sm"
             />
           </Field>
-          <div className="flex items-center gap-3 rounded-xl border border-line bg-cream/40 p-2.5">
+
+          {/* Live Preview box */}
+          <div className="flex items-center gap-3.5 rounded-2xl border border-line bg-cream/30 p-3">
             <img
               src={form.image}
               alt="Vista previa"
-              className="h-14 w-14 rounded-lg object-cover shadow-2xs"
+              className="h-14 w-14 shrink-0 rounded-xl object-cover border border-line shadow-2xs"
               onError={(event) => {
-                event.currentTarget.style.opacity = "0";
+                event.currentTarget.src =
+                  "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=85";
               }}
             />
-            <p className="text-xs leading-5 text-ink/65">
-              Usa una foto nítida donde el producto sea claramente reconocible.
-            </p>
+            <div className="min-w-0 flex-1 text-xs text-ink/70">
+              <span className="font-semibold text-ink">Vista previa de imagen</span>
+              <p className="mt-0.5 truncate text-[11px] text-ink/50">
+                Se verá así en el menú digital.
+              </p>
+            </div>
           </div>
-          <label className="flex cursor-pointer items-center gap-3 text-sm font-medium text-ink">
+
+          {/* Accessible Checkbox with full touch area */}
+          <label className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-xl border border-line/70 bg-cream/20 px-3.5 py-2.5 text-sm font-medium text-ink transition hover:bg-cream/50 touch-manipulation">
             <input
               type="checkbox"
               checked={form.available}
               onChange={(e) => update("available", e.target.checked)}
-              className="h-4 w-4 accent-espresso"
+              className="h-5 w-5 accent-espresso rounded"
             />
-            Disponible en el menú
+            <span>Disponible inmediatamente en el menú</span>
           </label>
         </div>
 
-        <button
-          disabled={!form.name || !form.price || !form.image}
-          onClick={() => onSave(form)}
-          className="mt-7 w-full rounded-full bg-ink py-3.5 text-sm font-semibold text-white transition hover:bg-espresso disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {product ? "Guardar cambios" : "Agregar producto"}
-        </button>
+        <div className="mt-5 border-t border-line pt-4">
+          <button
+            disabled={!form.name.trim() || !form.price || !form.image}
+            onClick={() => onSave(form)}
+            className="flex min-h-[48px] w-full items-center justify-center rounded-full bg-ink py-3 text-sm font-bold text-white shadow-xs transition hover:bg-espresso active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation"
+          >
+            {product ? "Guardar cambios" : "Agregar producto"}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -404,9 +470,9 @@ function ProductForm({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block text-sm font-semibold text-ink">
+    <label className="block text-xs font-bold uppercase tracking-wider text-ink/75">
       {label}
-      <div className="mt-2 [&>input]:w-full [&>input]:rounded-xl [&>input]:border [&>input]:border-line [&>input]:bg-cream/30 [&>input]:px-3.5 [&>input]:py-2.5 [&>input]:text-sm [&>input]:text-ink [&>input]:outline-none [&>input]:transition [&>input]:focus:border-espresso [&>input]:focus:bg-white [&>textarea]:w-full [&>textarea]:resize-none [&>textarea]:rounded-xl [&>textarea]:border [&>textarea]:border-line [&>textarea]:bg-cream/30 [&>textarea]:px-3.5 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:text-ink [&>textarea]:outline-none [&>textarea]:transition [&>textarea]:focus:border-espresso [&>textarea]:focus:bg-white [&>select]:w-full [&>select]:rounded-xl [&>select]:border [&>select]:border-line [&>select]:bg-cream/30 [&>select]:px-3.5 [&>select]:py-2.5 [&>select]:text-sm [&>select]:text-ink [&>select]:outline-none [&>select]:transition [&>select]:focus:border-espresso">
+      <div className="mt-1.5 [&>input]:w-full [&>input]:min-h-[44px] [&>input]:rounded-xl [&>input]:border [&>input]:border-line [&>input]:bg-cream/25 [&>input]:px-3.5 [&>input]:py-2.5 [&>input]:text-ink [&>input]:outline-none [&>input]:transition [&>input]:focus:border-espresso [&>input]:focus:bg-white [&>textarea]:w-full [&>textarea]:resize-none [&>textarea]:rounded-xl [&>textarea]:border [&>textarea]:border-line [&>textarea]:bg-cream/25 [&>textarea]:px-3.5 [&>textarea]:py-2.5 [&>textarea]:text-ink [&>textarea]:outline-none [&>textarea]:transition [&>textarea]:focus:border-espresso [&>textarea]:focus:bg-white [&>select]:w-full [&>select]:min-h-[44px] [&>select]:rounded-xl [&>select]:border [&>select]:border-line [&>select]:bg-cream/25 [&>select]:px-3.5 [&>select]:py-2.5 [&>select]:text-ink [&>select]:outline-none [&>select]:transition [&>select]:focus:border-espresso">
         {children}
       </div>
     </label>
